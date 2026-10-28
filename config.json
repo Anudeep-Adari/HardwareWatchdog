@@ -1,0 +1,15 @@
+{
+  "monitored_drives": ["C", "D", "E"],
+  "thresholds": {
+    "disk_warning_pct": 15.0,
+    "disk_critical_pct": 5.0,
+    "gpu_temp_warning_c": 82.0,
+    "gpu_temp_critical_c": 88.0,
+    "gpu_vram_warning_pct": 92.0,
+    "ram_warning_pct": 90.0,
+    "cpu_load_warning_pct": 95.0,
+    "ssd_wear_warning_pct": 80.0
+  },
+  "log_file": "E:/Antigravity_Projects/HardwareWatchdog/telemetry_log.json",
+  "max_history_entries": 100
+}
