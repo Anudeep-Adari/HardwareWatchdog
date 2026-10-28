@@ -2,12 +2,11 @@
 
 # 🐕 HardwareWatchdog
 
-<p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=26&duration=3000&pause=1000&color=2EA043&center=true&vCenter=true&width=620&lines=Autonomous+Hardware+Health+Telemetry;Real-Time+Thermal+%26+Clock+Throttling+Alerts;PowerShell+%2B+Python+Dual-Engine+Runtime;JSON-Journaled+System+Diagnostics" alt="Typing SVG" />
-</p>
+### Background Hardware Sentry, Thermal Throttling Monitor & Reliability Watchdog
+**PowerShell 7+ • Python 3.10+ • WMI / CIM Sensor Interrogation • Structured JSON Telemetry**
 
 <p align="center">
-  <strong>Lightweight Background Hardware Sentry, Thermal Throttling Monitor & System Reliability Watchdog</strong>
+  <em>Lightweight, non-intrusive hardware sentinel monitoring thermal dissipation, core clock throttling, and memory saturation in real time.</em>
 </p>
 
 <!-- Badges -->
@@ -104,3 +103,4 @@ Crafted with high engineering precision by **[Anudeep Adari](https://github.com/
 Continuous AI Code Reviews powered by **CodeRabbit**
 
 </div>
+
