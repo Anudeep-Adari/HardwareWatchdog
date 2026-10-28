@@ -30,28 +30,59 @@
 ## 📌 Architecture & Sentry Loop
 
 ```mermaid
-flowchart LR
-    subgraph Polling ["⏱️ Telemetry Loop (hardware_watchdog.py)"]
-        WMI["WMI / CIM Hardware Sensors"]
-        CPU["CPU Thermals & Utilization"]
-        RAM["RAM Commit & Standby"]
-        Storage["Storage I/O Queues"]
+flowchart TB
+    %% Styling & Spacing
+    classDef client fill:#161b22,stroke:#58a6ff,stroke-width:2px,color:#ffffff;
+    classDef zone fill:#0d1117,stroke:#30363d,stroke-width:1.5px,color:#c9d1d9;
+    classDef security fill:#161b22,stroke:#f85149,stroke-width:2px,color:#ffffff;
+    classDef data fill:#161b22,stroke:#3fb950,stroke-width:2px,color:#ffffff;
+
+    subgraph KernelSensors [" 🖥️ HARDWARE & SENSOR INTERROGATION TIER "]
+        direction LR
+        WMI["WMI / CIM Providers<br/><sub>Root\WMI & Root\CIMV2 Classes</sub>"]:::client
+        PerfMon["Performance Counters<br/><sub>High-Resolution Hardware Timers</sub>"]:::client
     end
 
-    subgraph Analyzer ["🧠 Threshold Evaluation Engine"]
-        Rules["config.json Thresholds"]
-        Evaluator["Anomaly & Throttle Detector"]
+    subgraph Region1 [" 🔌 REGION 1: HARDWARE METRIC SAMPLING ZONE "]
+        direction TB
+        CPUThermal["CPU Thermals & Throttling<br/>• Package Temp & Thermal Decay<br/>• Core Clock Scaling & PROCHOT Flagger"]:::client
+        RAMCommit["Memory Saturation Monitor<br/>• Committed Virtual Memory Rate<br/>• Available Physical RAM Depletion"]:::client
+        StorageIO["Storage S.M.A.R.T. Sentry<br/>• Disk Read/Write Active Time<br/>• IOPS Wait Queue Depth"]:::client
     end
 
-    subgraph Actions ["🚀 Notification & Telemetry Logging"]
-        Alert["Console & Event Log Alerts"]
-        JSONLog[("Structured Telemetry Log\ntelemetry_log.json")]
+    subgraph Region2 [" 🧠 REGION 2: THRESHOLD & ANOMALY ENGINE "]
+        direction TB
+        ConfigRules["Rule Matrix (config.json)<br/>• Critical Temperature Limits (85°C)<br/>• Memory Pressure Watermarks"]:::client
+        Evaluator["Anomaly Evaluator<br/>• Delta Velocity Calculation<br/>• Sustained Load Threshold Detector"]:::security
     end
 
-    Polling --> Evaluator
-    Rules --> Evaluator
-    Evaluator --> Alert
-    Evaluator --> JSONLog
+    subgraph CentralTransit [" ⚙️ CENTRAL TRANSIT: DUAL RUNTIME GATEWAY "]
+        direction TB
+        PyEngine["Python Runtime (hardware_watchdog.py)<br/><sub>Structured Async Sampling Daemon</sub>"]:::client
+        PSEngine["PowerShell Sentry (Invoke-HardwareWatchdog.ps1)<br/><sub>Native Windows Zero-Dependency Runner</sub>"]:::client
+    end
+
+    subgraph OutputPlane [" 📊 TELEMETRY PERSISTENCE & ALERTING PLANE "]
+        direction LR
+        LogStore[("Structured JSON Log<br/>telemetry_log.json Ledger")]:::data
+        AlertConsole["System Alerts & Event Logs<br/><sub>Windows Event Log (ID 1001/41) & Console</sub>"]:::data
+    end
+
+    %% Spacious Architectural Connections
+    WMI --------------> CPUThermal
+    WMI --------------> RAMCommit
+    PerfMon ----------> StorageIO
+
+    CPUThermal -------> Evaluator
+    RAMCommit --------> Evaluator
+    StorageIO --------> Evaluator
+    ConfigRules ------> Evaluator
+
+    Evaluator --------> PyEngine
+    Evaluator --------> PSEngine
+
+    PyEngine ---------> LogStore
+    PSEngine ---------> AlertConsole
 ```
 
 ---
