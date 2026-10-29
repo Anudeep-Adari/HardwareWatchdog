@@ -3,14 +3,31 @@ name: HardwareWatchdog CI
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'assets/**'
+      - '.gitignore'
+      - '.coderabbit.yaml'
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'assets/**'
+      - '.gitignore'
+      - '.coderabbit.yaml'
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate:
     name: PowerShell & Python Validation
     runs-on: windows-latest
+    timeout-minutes: 5
 
     steps:
       - name: Checkout Repository
@@ -26,9 +43,6 @@ jobs:
             [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$parseErrors)
             if ($parseErrors.Count -gt 0) {
               $errors += $parseErrors
-              Write-Error "Syntax error in $($_.Name): $($parseErrors | Out-String)"
-            } else {
-              Write-Host "Validated $($_.Name): Syntax OK" -ForegroundColor Green
             }
           }
           if ($errors.Count -gt 0) { exit 1 }
